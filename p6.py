@@ -4,6 +4,7 @@ import sys
 sys.setrecursionlimit(10000)
 
 DIRECTIONS_MAP = {'^': (-1, 0), '>': (0, 1), 'v': (1, 0), '<': (0, -1)}
+HEIGHT, WIDTH = 130, 130
 
 def _main():
     # Read
@@ -33,7 +34,7 @@ def create_labmap(lines):
     Read lines and create map with 0 for open spots, and 1 for obstacles
     . = 0,  # = 1,  X = 2
     """
-    labmap = np.zeros((130, 130), np.int8)
+    labmap = np.zeros((HEIGHT, WIDTH), np.int8)
     for r, line in enumerate(lines):
         for c, l in enumerate(line.strip()):
             if l == '#':
@@ -54,7 +55,7 @@ def count_moves(labmap, row, col, dir, moves, obstacle_map, positions):
     next_row = row + dir[0]
     next_col = col + dir[1]
 
-    if next_row < 0 or next_row > 129 or next_col < 0 or next_col > 129:
+    if next_row < 0 or next_row > HEIGHT - 1 or next_col < 0 or next_col > WIDTH - 1:
         labmap[row][col] = 2
         return moves, positions
     elif labmap[next_row][next_col] == 1:
