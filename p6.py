@@ -3,7 +3,7 @@ import numpy as np
 import sys
 sys.setrecursionlimit(10000)
 
-
+DIRECTIONS_MAP = {'^': (-1, 0), '>': (0, 1), 'v': (1, 0), '<': (0, -1)}
 
 def _main():
     # Read
@@ -12,8 +12,8 @@ def _main():
     
     # Create map and solve
     labmap, row, col, dir = create_labmap(lines)
-    obstacles = {(-1, 0): [], (0, 1): [], (1, 0): [], (0, -1): []}
-    moves = count_moves(labmap, row, col, dir, 1, obstacles)
+    obstacle_map = {dir: [] for dir in DIRECTIONS_MAP.values()}
+    moves, positions = count_moves(labmap, row, col, dir, 1, obstacle_map, 0)
 
     # Write
     with open('output6', 'w') as fp:
@@ -25,6 +25,7 @@ def _main():
 
     # Output result
     print(f'Part 1: Total distinct positions: {moves}')
+    print(f'Part 2: Total obstacle positions: {positions}')
 
 
 def create_labmap(lines):
@@ -33,17 +34,16 @@ def create_labmap(lines):
     . = 0,  # = 1,  X = 2
     """
     labmap = np.zeros((130, 130), np.int8)
-    dir_table = {'^': (-1, 0), '>': (0, 1), 'v': (1, 0), '<': (0, -1)}
     for r, line in enumerate(lines):
         for c, l in enumerate(line.strip()):
             if l == '#':
                 labmap[r][c] = 1
             elif l != '.':
-                row, col, dir = r, c, dir_table[lines[r][c]]
+                row, col, dir = r, c, DIRECTIONS_MAP[lines[r][c]]
     return labmap, row, col, dir
 
 
-def count_moves(labmap, row, col, dir, moves, obstacles):
+def count_moves(labmap, row, col, dir, moves, obstacle_map, positions):
     """
     Recursively move one step at a time based on the next location based on the following possibilities
     1. Edge - we are done, return the number of unique positions
@@ -51,25 +51,48 @@ def count_moves(labmap, row, col, dir, moves, obstacles):
     3. Overlapping path (X) - make the move but don't increment unique position count
     4. Open spot (.) - make the move and increment unique position count
     """
-    r, c = dir
-    next_row = row + r
-    next_col = col + c
+    next_row = row + dir[0]
+    next_col = col + dir[1]
 
     if next_row < 0 or next_row > 129 or next_col < 0 or next_col > 129:
         labmap[row][col] = 2
-        return moves
+        return moves, positions
     elif labmap[next_row][next_col] == 1:
-        obstacles[dir].append((row, col))
+        obstacle_map[dir].append((row, col))
         dir = (dir[1], -dir[0])
-        return count_moves(labmap, row, col, dir, moves, obstacles)
+        return count_moves(labmap, row, col, dir, moves, obstacle_map, positions)
     elif labmap[next_row][next_col] == 2:
-        # TODO check obstacle list
+        next_dir = (dir[1], -dir[0])
+        obstacles = obstacle_map[next_dir]
+        for o in obstacles:
+            obr = o[0]
+            obc = o[1]
+            if dir == (-1, 0) and obr == row and obc > col: # up
+                positions += 1
+            elif dir == (0, 1) and obr > row and obc == col: # right
+                positions += 1
+            elif dir == (1, 0) and obr == row and obc < col: # down
+                positions += 1
+            elif dir == (0, -1) and obr < row and obc == col: # left
+                positions += 1
         labmap[row][col] = 2
-        return count_moves(labmap, next_row, next_col, dir, moves, obstacles)
+        return count_moves(labmap, next_row, next_col, dir, moves, obstacle_map, positions)
     else:
-        # TODO check obstacle list
+        next_dir = (dir[1], -dir[0])
+        obstacles = obstacle_map[next_dir]
+        for o in obstacles:
+            obr = o[0]
+            obc = o[1]
+            if dir == (-1, 0) and obr == row and obc > col: # up
+                positions += 1
+            elif dir == (0, 1) and obr > row and obc == col: # right
+                positions += 1
+            elif dir == (1, 0) and obr == row and obc < col: # down
+                positions += 1
+            elif dir == (0, -1) and obr < row and obc == col: # left
+                positions += 1
         labmap[row][col] = 2
-        return count_moves(labmap, next_row, next_col, dir, moves + 1, obstacles)
+        return count_moves(labmap, next_row, next_col, dir, moves + 1, obstacle_map, positions)
 
 
 if __name__ == '__main__':
