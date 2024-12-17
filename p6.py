@@ -12,7 +12,7 @@ def _main():
     
     # Create map and solve
     labmap, row, col, dir = create_labmap(lines)
-    obstacles = {'^': [], '>': [], 'v': [], '<': []}
+    obstacles = {(-1, 0): [], (0, 1): [], (1, 0): [], (0, -1): []}
     moves = count_moves(labmap, row, col, dir, 1, obstacles)
 
     # Write
@@ -59,14 +59,17 @@ def count_moves(labmap, row, col, dir, moves, obstacles):
         labmap[row][col] = 2
         return moves
     elif labmap[next_row][next_col] == 1:
+        obstacles[dir].append((row, col))
         dir = (dir[1], -dir[0])
-        return count_moves(labmap, row, col, dir, moves)
+        return count_moves(labmap, row, col, dir, moves, obstacles)
     elif labmap[next_row][next_col] == 2:
+        # TODO check obstacle list
         labmap[row][col] = 2
-        return count_moves(labmap, next_row, next_col, dir, moves)
+        return count_moves(labmap, next_row, next_col, dir, moves, obstacles)
     else:
+        # TODO check obstacle list
         labmap[row][col] = 2
-        return count_moves(labmap, next_row, next_col, dir, moves + 1)
+        return count_moves(labmap, next_row, next_col, dir, moves + 1, obstacles)
 
 
 if __name__ == '__main__':
