@@ -15,9 +15,10 @@ def _main():
 
 def calibrate(lines):
     cal_result = 0
-    for line in lines:
+    for i, line in enumerate(lines):
+        print(f'{i+1:03d}/850 - {line}')
         test_val = int(line.split(':')[0])
-        nums = [int(x) for x in line.split(':')[1].split(' ')]
+        nums = [int(x) for x in line.split(':')[1].strip().split(' ')]
         line_result = analyze_line(test_val, nums)
         cal_result += line_result
     return cal_result
