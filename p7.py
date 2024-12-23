@@ -20,15 +20,30 @@ def calibrate(lines):
         nums = [int(x) for x in line.split(':')[1].split(' ')]
         line_result = analyze_line(test_val, nums)
         cal_result += line_result
+    return cal_result
 
 
 def analyze_line(test_val, nums):
     # determine if operators + and * can be combined to acheive a truthy equation
     # return test_val if truthy, else 0
     total_operators = len(nums) - 1
-    if total_operators > 0:
-        return test_val
-    # bin(4) = '0b01'
+    # if you have 5 operators, you can do 00000 to 11111
+    operator_combos = pow(2, total_operators)
+    res = 0
+    for i in range(operator_combos):
+        # 16 chose arbirtrarily, and reversed
+        operator_str = f'{i:>016b}'[::-1]
+        res = nums[0]
+        for j, num in enumerate(nums[1:]):
+            c = operator_str[j]
+            if c == '1':
+                res *= num
+            else:
+                res += num
+            if res >= test_val:
+                break
+        if res == test_val:
+            return res
     return 0
 
 
