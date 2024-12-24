@@ -10,11 +10,10 @@ def _main():
     # Read
     with open(FNAME, 'r') as fp:
         lines = fp.readlines()
-    
+    # map
     citymap = create_citymap(lines)
     # solve
     antinodes = set(find_antinodes(citymap))
-
     # Output result
     print(f'Part 1: Total unique antinodes: {len(antinodes)}')
 
@@ -42,7 +41,8 @@ def find_antinodes(citymap):
         antenna_coords = citymap[k]
         antenna_pairs = get_pairs(antenna_coords)
         for pair in antenna_pairs:
-            antinodes.extend(get_antinodes(pair))
+            # antinodes.extend(get_antinodes(pair))
+            antinodes.extend(get_antinodes_2(pair))
     return antinodes
 
 
@@ -63,30 +63,19 @@ def get_antinodes(pair):
 
 def get_antinodes_2(pair):
     a, b = pair
-    # diff is diff in rows, diff in cols, so 0,0, 2,5 would be 2,5
     diff = (b[0] - a[0], b[1] - a[1])
-    r, c = (a[0] - diff[0], a[1] - diff[1])
+    r, c = (a[0], a[1])
     antinodes = []
     while in_map((r, c)):
         antinodes.append((r, c))
         r -= diff[0]
         c -= diff[1]
-    r,c = (b[0] + diff[0], b[1] + diff[1])
+    r,c = (b[0], b[1])
     while in_map((r, c)):
         antinodes.append((r, c))
         r += diff[0]
         c += diff[1]
     return antinodes
-
-    # 3,4, and 5,5
-    # diff is 2,1
-    # a = 1, 3
-    # b = 7,6
-
-    # 5,5 and 3,4
-    # diff is -2,-1
-    # b = 7,6
-    # a = 1, 3
 
 
 def in_map(node):
