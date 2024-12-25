@@ -33,21 +33,6 @@ def create_filemap(diskmap):
     return filemap
 
 
-def create_filemap_old(diskmap):
-    """
-    Convert from 12345 to 0..111....22222
-    """
-    filemap = ''
-    id = 0
-    for i, c in enumerate(diskmap):
-        if i % 2 == 0:
-            filemap += f'{id}' * int(c)
-            id += 1
-        else:
-            filemap += '.' * int(c)
-    return filemap
-
-
 def compact_filemap(filemap):
     i = 0
     j = len(filemap) - 1
@@ -67,48 +52,11 @@ def compact_filemap(filemap):
     return result
 
 
-def compact_filemap_old(filemap):
-    """
-    Compact the filemap
-    0..111....22222
-    022111222
-    """
-    i = 0
-    j = len(filemap) - 1
-    result = ''
-    while i <= j:
-        if filemap[i] != '.':
-            result += filemap[i]
-            i += 1
-        else:
-            if filemap[j] != '.':
-                result += filemap[j]
-                i += 1
-            j -= 1
-    while i < len(filemap):
-        result += '.'
-        i += 1
-    return result
-    
-
 def compute_checksum(compacted):
     checksum = 0
     for i, x in enumerate(compacted):
         if x >= 0:
             checksum += i * x
-    return checksum
-
-
-def compute_checksum_old(compacted):
-    """
-    0938288002
-    0*0 + 1*9 + 2*3 + 3*8 ...
-    """
-    checksum = 0
-    for i, c in enumerate(compacted):
-        if c != '.':
-            # print(f'{i}*{int(c)}')
-            checksum += i * int(c)
     return checksum
 
 
