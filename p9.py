@@ -1,8 +1,8 @@
 #!/Users/noahthomas/Code/advent/venv/bin/python
 import numpy as np
 
-# FNAME = 'input9'
-FNAME = 'input9-2'
+FNAME = 'input9'
+# FNAME = 'input9-2'
 
 def _main():
     # Read
@@ -12,13 +12,13 @@ def _main():
     filemap = create_filemap(diskmap)
     print(f'Filemap: {filemap}')
 
-    # compacted = compact_filemap(filemap)
-    # print(f'Compacted: {compacted}')
+    compacted = compact_filemap(filemap)
+    print(f'Compacted: {compacted}')
 
-    # checksum = compute_checksum(compacted)
+    checksum = compute_checksum(compacted)
 
     # Output result
-    # print(f'Part 1: Computed checksum: {checksum}')
+    print(f'Part 1: Computed checksum: {checksum}')
 
 
 def create_filemap(diskmap):
@@ -49,6 +49,25 @@ def create_filemap_old(diskmap):
 
 
 def compact_filemap(filemap):
+    i = 0
+    j = len(filemap) - 1
+    result = []
+    while i <= j:
+        if filemap[i] >= 0:
+            result.append(filemap[i])
+            i += 1
+        else:
+            if filemap[j] >= 0:
+                result.append(filemap[j])
+                i += 1
+            j -= 1
+    while i < len(filemap):
+        result.append(-1)
+        i += 1
+    return result
+
+
+def compact_filemap_old(filemap):
     """
     Compact the filemap
     0..111....22222
@@ -73,6 +92,14 @@ def compact_filemap(filemap):
     
 
 def compute_checksum(compacted):
+    checksum = 0
+    for i, x in enumerate(compacted):
+        if x >= 0:
+            checksum += i * x
+    return checksum
+
+
+def compute_checksum_old(compacted):
     """
     0938288002
     0*0 + 1*9 + 2*3 + 3*8 ...
@@ -89,3 +116,4 @@ if __name__ == '__main__':
     _main()
 
 # 89312744865 was not right
+# 6283170117911 after using int arrays
