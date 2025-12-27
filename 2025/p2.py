@@ -9,7 +9,7 @@ TEST_INPUT = """11-22,95-115,998-1012,1188511880-1188511890,222220-222224,
     824824821-824824827,2121212118-2121212124"""
 
 def main():
-    with open('input2', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.read()
     # invalid_ids = get_invalid_ids(TEST_INPUT)
     invalid_ids = get_invalid_ids(data)
